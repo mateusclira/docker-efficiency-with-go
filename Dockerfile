@@ -1,10 +1,15 @@
-FROM golang:1.20.4-alpine3.18
+FROM golang:1.20.4-alpine3.18 as dev
 
-WORKDIR /app
+WORKDIR /usr/src/app
 
-COPY go.mod ./
-COPY main.go ./
+COPY . .
 
-RUN go build -o /golang && go run main.go
+RUN go build -o desafio -ldflags "-s -w"
 
-CMD [ "/golang" ]
+FROM scratch
+
+WORKDIR /usr/src/app
+
+COPY --from=dev /usr/src/app .
+
+ENTRYPOINT [ "./desafio"]
